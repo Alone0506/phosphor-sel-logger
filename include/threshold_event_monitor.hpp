@@ -312,6 +312,9 @@ inline static sdbusplus::bus::match_t startThresholdAssertMonitor(
                 break;
             }
         }
+
+        std::string selDataStr;
+        toHexStr(eventData, selDataStr);
         if (eventType != eventNone)
         {
             sdbusplus::message_t AddToLog = conn->new_method_call(
@@ -320,10 +323,10 @@ inline static sdbusplus::bus::match_t startThresholdAssertMonitor(
             AddToLog.append(journalMsg, LogLevel,
                             std::map<std::string, std::string>(
                                 {{"SENSOR_PATH", std::string(msg.get_path())},
-                                 {"EVENT", threshold},
-                                 {"DIRECTION", direction},
-                                 {"THRESHOLD", std::to_string(thresholdVal)},
-                                 {"READING", std::to_string(assertValue)}}));
+                                 {"GENERATOR_ID", std::to_string(selBMCGenID)},
+                                 {"RECORD_TYPE", std::to_string(0x02)},
+                                 {"EVENT_DIR", std::to_string(assert)},
+                                 {"SENSOR_DATA", selDataStr}}));
             conn->call(AddToLog);
         }
 #else
